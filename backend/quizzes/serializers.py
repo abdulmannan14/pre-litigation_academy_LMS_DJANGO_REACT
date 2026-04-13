@@ -81,3 +81,16 @@ class QuizWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = ('id', 'lesson', 'title')
+
+
+class QuizAdminSerializer(serializers.ModelSerializer):
+    """Used for admin — includes correct answers and explanations."""
+    questions = QuestionWithAnswerSerializer(many=True, read_only=True)
+    question_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Quiz
+        fields = ('id', 'title', 'lesson', 'question_count', 'questions')
+
+    def get_question_count(self, obj):
+        return obj.questions.count()

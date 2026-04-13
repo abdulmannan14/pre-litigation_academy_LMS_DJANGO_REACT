@@ -14,3 +14,19 @@ export const markLessonComplete = (lessonId, videoPosition = 0) =>
 
 export const saveVideoPosition = (lessonId, videoPosition) =>
   api.post('/progress/position/', { lesson_id: lessonId, video_position: videoPosition });
+
+// Admin
+export const getAdminStats = () =>
+  api.get('/admin/stats/');
+
+export const getAdminStudents = () =>
+  api.get('/admin/students/');
+
+export const createAdminStudent = (data) =>
+  api.post('/admin/students/', data);
+
+export const updateAdminStudent = (id, data) =>
+  api.patch(`/admin/students/${id}/`, data);
+
+export const deleteAdminStudent = (id) =>
+  api.delete(`/admin/students/${id}/`);

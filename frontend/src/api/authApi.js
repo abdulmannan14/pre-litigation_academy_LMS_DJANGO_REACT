@@ -14,3 +14,15 @@ export const getMe = () =>
 
 export const refreshToken = (refresh) =>
   api.post('/auth/token/refresh/', { refresh });
+
+export const updateProfile = (data) =>
+  api.patch('/auth/me/', data);
+
+export const changePassword = (data) =>
+  api.post('/auth/change-password/', data);
+
+export const checkEmail = (email) =>
+  api.get('/auth/check-email/', { params: { email } });
+
+export const checkUsername = (username) =>
+  api.get('/auth/check-username/', { params: { username } });

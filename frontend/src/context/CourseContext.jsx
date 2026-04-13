@@ -37,9 +37,11 @@ export function CourseProvider({ children }) {
       const { data } = await courseApi.getCourses();
       const list = data.results ?? data;
       setCourses(list);
-      // Auto-enroll in first course if student
-      if (user && !user.is_staff && list.length > 0) {
-        progressApi.enrollInCourse(list[0].id).catch(() => {});
+      // Auto-enroll in all published courses if student
+      if (user && !user.is_staff) {
+        list.forEach((course) => {
+          progressApi.enrollInCourse(course.id).catch(() => {});
+        });
       }
     } catch (err) {
       setCoursesError('Failed to load courses.');

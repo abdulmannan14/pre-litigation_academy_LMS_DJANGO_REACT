@@ -4,16 +4,20 @@ from rest_framework.views import APIView
 
 from .models import Quiz, Question, QuizAttempt
 from .serializers import (
-    QuizSerializer, QuizWriteSerializer,
+    QuizSerializer, QuizWriteSerializer, QuizAdminSerializer,
     QuestionWriteSerializer, QuestionWithAnswerSerializer,
     QuizSubmitSerializer, QuizAttemptSerializer,
 )
 
 
 class QuizDetailView(generics.RetrieveAPIView):
-    """GET /api/quiz/<lesson_id>/ — get quiz for a lesson."""
-    serializer_class = QuizSerializer
+    """GET /api/quiz/<lesson_id>/ — get quiz for a lesson. Returns full data for staff."""
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return QuizAdminSerializer
+        return QuizSerializer
 
     def get_object(self):
         lesson_id = self.kwargs['lesson_id']

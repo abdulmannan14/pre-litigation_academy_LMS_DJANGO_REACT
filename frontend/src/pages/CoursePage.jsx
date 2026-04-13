@@ -68,7 +68,7 @@ export default function CoursePage() {
       {/* Course header */}
       <div className="bg-white rounded-2xl border border-[#F0E8E5] p-6 flex flex-col md:flex-row md:items-center gap-6 mb-8">
         <div className="flex-1">
-          <Badge variant="default" className="mb-3">Pre-Litigation</Badge>
+          <Badge variant="default" className="mb-3">{course.module_count} Modules</Badge>
           <h1 className="text-xl font-bold text-textDark mb-2">{course.title}</h1>
           <p className="text-sm text-gray-500 mb-4 leading-relaxed">{course.description}</p>
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
@@ -82,10 +82,17 @@ export default function CoursePage() {
             variant="primary"
             size="md"
             className="w-full"
-            onClick={() => navigate(`/lessons/${lastLessonId || firstLessonId}`)}
+            disabled={!lastLessonId && !firstLessonId}
+            onClick={() => {
+              const target = lastLessonId || firstLessonId;
+              if (target) navigate(`/lessons/${target}`);
+            }}
           >
             {progressPct > 0 ? '▶ Resume Course' : '▶ Start Course'}
           </Button>
+          {!lastLessonId && !firstLessonId && (
+            <p className="text-xs text-gray-400 text-center mt-2">No lessons available yet.</p>
+          )}
         </div>
       </div>
 
@@ -130,8 +137,9 @@ export default function CoursePage() {
                     return (
                       <button
                         key={lesson.id}
-                        onClick={() => navigate(`/lessons/${lesson.id}`)}
-                        className={`w-full flex items-center gap-4 px-6 py-3.5 text-left hover:bg-background transition-colors border-b border-[#F0E8E5] last:border-0 ${isLast ? 'bg-accent/20' : ''}`}
+                        onClick={() => lesson.id && navigate(`/lessons/${lesson.id}`)}
+                        disabled={!lesson.id}
+                        className={`w-full flex items-center gap-4 px-6 py-3.5 text-left hover:bg-background transition-colors border-b border-[#F0E8E5] last:border-0 disabled:opacity-50 disabled:cursor-not-allowed ${isLast ? 'bg-accent/20' : ''}`}
                       >
                         <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-medium ${
                           isCompleted

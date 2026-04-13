@@ -10,6 +10,7 @@ export default function QuizSection({ quiz, lessonId, onComplete }) {
   const [result, setResult] = useState(null);   // API response
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState(null);
+  const [unansweredWarning, setUnansweredWarning] = useState(false);
 
   if (!quiz) return null;
 
@@ -18,13 +19,15 @@ export default function QuizSection({ quiz, lessonId, onComplete }) {
   const handleSelect = (qIdx, optKey) => {
     if (submitted) return;
     setAnswers((prev) => ({ ...prev, [qIdx]: optKey }));
+    if (unansweredWarning) setUnansweredWarning(false);
   };
 
   const handleSubmit = async () => {
     if (Object.keys(answers).length < questions.length) {
-      alert('Please answer all questions before submitting.');
+      setUnansweredWarning(true);
       return;
     }
+    setUnansweredWarning(false);
 
     // Build payload: { [question.id]: 'A'/'B'/'C'/'D' }
     const payload = {};
@@ -54,6 +57,7 @@ export default function QuizSection({ quiz, lessonId, onComplete }) {
     setSubmitted(false);
     setResult(null);
     setApiError(null);
+    setUnansweredWarning(false);
   };
 
   // Build a lookup from question ID → result
@@ -167,7 +171,12 @@ export default function QuizSection({ quiz, lessonId, onComplete }) {
 
       {/* Submit */}
       {!submitted && (
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex flex-col items-end gap-3">
+          {unansweredWarning && (
+            <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 w-full text-center">
+              Please answer all {questions.length} questions before submitting.
+            </p>
+          )}
           <Button
             onClick={handleSubmit}
             variant="primary"

@@ -5,6 +5,9 @@ from .views import (
     MarkLessonCompleteView,
     SaveVideoPositionView,
     MyProgressView,
+    AdminStatsView,
+    AdminStudentsView,
+    AdminStudentDetailView,
 )
 
 urlpatterns = [
@@ -13,4 +16,7 @@ urlpatterns = [
     path('progress/complete/', MarkLessonCompleteView.as_view(), name='progress-complete'),
     path('progress/position/', SaveVideoPositionView.as_view(), name='progress-position'),
     path('progress/<int:course_id>/', CourseProgressView.as_view(), name='progress-detail'),
+    path('admin/stats/', AdminStatsView.as_view(), name='admin-stats'),
+    path('admin/students/', AdminStudentsView.as_view(), name='admin-students'),
+    path('admin/students/<int:pk>/', AdminStudentDetailView.as_view(), name='admin-student-detail'),
 ]

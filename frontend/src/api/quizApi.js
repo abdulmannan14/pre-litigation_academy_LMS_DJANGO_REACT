@@ -13,6 +13,12 @@ export const getMyAttempts = () =>
 export const createQuiz = (data) =>
   api.post('/quiz/create/', data);
 
+export const updateQuiz = (id, data) =>
+  api.patch(`/quiz/${id}/update/`, data);
+
+export const deleteQuiz = (id) =>
+  api.delete(`/quiz/${id}/delete/`);
+
 export const createQuestion = (data) =>
   api.post('/questions/create/', data);
 

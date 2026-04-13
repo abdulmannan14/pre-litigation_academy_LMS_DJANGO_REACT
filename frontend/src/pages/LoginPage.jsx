@@ -44,9 +44,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <img src={favicon} alt="Pre-Litigation Academy" className="h-20 w-auto mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-textDark">Welcome back</h1>
-          <p className="text-sm text-gray-500 mt-1">Sign in to continue learning</p>
+          <img src={favicon} alt="Pre-Litigation Academy" className="h-32 w-auto mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-textDark">Pre-Litigation Academy</h1>
+          <p className="text-sm text-gray-500 mt-1">Training the Next Generation of Legal Professionals</p>
         </div>
 
         {/* Card */}
@@ -56,12 +56,6 @@ export default function LoginPage() {
               {error}
             </div>
           )}
-
-          {/* Demo credentials hint */}
-          <div className="mb-5 p-3 bg-accent/40 rounded-xl text-xs text-secondary">
-            <p className="font-semibold mb-1">Demo — create an account or use superuser credentials.</p>
-            <p className="text-gray-500">Run <code className="bg-white px-1 rounded">python manage.py createsuperuser</code> in backend.</p>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input

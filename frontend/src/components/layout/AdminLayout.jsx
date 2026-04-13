@@ -5,7 +5,7 @@ import logo from '../../assets/logo/Logo.png';
 const navItems = [
   { to: '/admin', label: 'Overview', icon: '📊', end: true },
   { to: '/admin/courses', label: 'Courses', icon: '📚' },
-  { to: '/admin/users', label: 'Users', icon: '👥' },
+  { to: '/admin/users', label: 'Students', icon: '👥' },
 ];
 
 export default function AdminLayout({ children }) {
@@ -15,13 +15,12 @@ export default function AdminLayout({ children }) {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar */}
       <aside className="w-60 bg-white border-r border-[#F0E8E5] flex flex-col shrink-0">
         {/* Logo */}
-        <div className="px-4 py-4 border-b border-[#F0E8E5]">
-          <img src={logo} alt="Pre-Litigation Academy" className="h-9 w-auto" />
-          <p className="text-xs text-gray-400 mt-1 pl-0.5">Admin Panel</p>
+        <div className="px-4 py-5 border-b border-[#F0E8E5]">
+          <img src={logo} alt="Pre-Litigation Academy" className="h-14 w-auto" />
         </div>
 
         {/* Nav */}
@@ -45,32 +44,50 @@ export default function AdminLayout({ children }) {
           ))}
         </nav>
 
-        {/* User */}
+        {/* Logout */}
         <div className="px-4 py-4 border-t border-[#F0E8E5]">
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-semibold text-secondary">
-              {user?.name?.split(' ').map((n) => n[0]).join('')}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-textDark truncate">{user?.name}</p>
-              <p className="text-xs text-gray-400">Administrator</p>
-            </div>
-          </div>
           <button
             onClick={handleLogout}
-            className="w-full text-xs text-red-500 hover:text-red-600 text-left px-1 py-1"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-[#b5726a] transition-colors"
           >
-            Sign out →
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
           </button>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          {children}
-        </div>
-      </main>
+      {/* Right column: header + content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+
+        {/* Top header */}
+        <header className="h-16 bg-white border-b border-[#F0E8E5] flex items-center justify-between px-6 shrink-0">
+          <p className="text-sm font-medium text-gray-400">Admin Portal</p>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-xs font-semibold text-secondary">
+              {user?.username?.slice(0, 2).toUpperCase()}
+            </div>
+            <span className="text-sm font-medium text-textDark">{user?.username}</span>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 transition-colors ml-2"
+            >
+              Logout
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        {/* Main content */}
+        <main className="flex-1 overflow-auto">
+          <div className="max-w-6xl mx-auto px-6 py-8">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

@@ -54,6 +54,28 @@ class LogoutView(APIView):
             return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CheckEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        email = request.query_params.get('email', '').strip()
+        if not email:
+            return Response({'exists': False})
+        exists = User.objects.filter(email__iexact=email).exists()
+        return Response({'exists': exists})
+
+
+class CheckUsernameView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        username = request.query_params.get('username', '').strip()
+        if not username:
+            return Response({'exists': False})
+        exists = User.objects.filter(username__iexact=username).exists()
+        return Response({'exists': exists})
+
+
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -66,3 +88,24 @@ class MeView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        old_password = request.data.get('old_password', '').strip()
+        new_password = request.data.get('new_password', '').strip()
+
+        if not old_password or not new_password:
+            return Response({'error': 'Both old and new passwords are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not request.user.check_password(old_password):
+            return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(new_password) < 6:
+            return Response({'error': 'New password must be at least 6 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.set_password(new_password)
+        request.user.save()
+        return Response({'message': 'Password changed successfully.'})

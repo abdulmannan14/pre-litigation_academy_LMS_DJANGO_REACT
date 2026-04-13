@@ -12,11 +12,12 @@ import ErrorMessage from '../components/common/ErrorMessage';
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { courses, coursesLoading, coursesError, fetchCourses, fetchCourseProgress } = useCourse();
+  const { courses, coursesLoading, coursesError, fetchCourses, fetchCourseProgress, fetchLesson } = useCourse();
   const navigate = useNavigate();
 
   const [progressMap, setProgressMap] = useState({}); // { [courseId]: progressData }
   const [progressLoading, setProgressLoading] = useState(false);
+  const [lastLesson, setLastLesson] = useState(null);
 
   useEffect(() => {
     if (!courses.length) return;
@@ -35,6 +36,16 @@ export default function DashboardPage() {
     setProgressLoading(false);
   };
 
+  // Fetch last lesson title once we know the lastLessonId
+  const course = courses[0];
+  const progress = course ? progressMap[course.id] : null;
+  const lastLessonId = progress?.last_lesson_id;
+
+  useEffect(() => {
+    if (!lastLessonId) { setLastLesson(null); return; }
+    fetchLesson(lastLessonId).then(setLastLesson).catch(() => setLastLesson(null));
+  }, [lastLessonId]);
+
   const greeting = () => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -45,14 +56,9 @@ export default function DashboardPage() {
   if (coursesLoading || progressLoading) return <Layout><SectionLoader message="Loading your dashboard..." /></Layout>;
   if (coursesError) return <Layout><ErrorMessage message={coursesError} onRetry={fetchCourses} /></Layout>;
 
-  // Use first course for the main card
-  const course = courses[0];
-  const progress = course ? progressMap[course.id] : null;
   const progressPct = progress?.progress_percentage ?? 0;
   const completedIds = progress?.completed_lesson_ids ?? [];
-  const lastLessonId = progress?.last_lesson_id;
   const totalLessons = course?.total_lessons ?? 0;
-  const quizAttempts = 0; // fetched separately if needed
 
   return (
     <Layout>
@@ -100,7 +106,7 @@ export default function DashboardPage() {
                 <Button onClick={() => navigate(`/courses/${course.id}`)} variant="primary">
                   View Course
                 </Button>
-                {lastLessonId && (
+                {lastLessonId && Number.isInteger(lastLessonId) && (
                   <Button onClick={() => navigate(`/lessons/${lastLessonId}`)} variant="outline">
                     Resume Lesson
                   </Button>
@@ -140,12 +146,17 @@ export default function DashboardPage() {
 
           {/* Right column */}
           <div className="space-y-6">
-            {lastLessonId && (
+            {lastLessonId && Number.isInteger(lastLessonId) && (
               <Card>
                 <h3 className="font-semibold text-textDark mb-3">Continue Learning</h3>
                 <div className="bg-background rounded-xl p-4 mb-4">
                   <p className="text-xs text-secondary font-medium mb-1">Last viewed</p>
-                  <p className="text-sm font-medium text-textDark">Lesson #{lastLessonId}</p>
+                  <p className="text-sm font-medium text-textDark">
+                    {lastLesson ? lastLesson.title : `Lesson #${lastLessonId}`}
+                  </p>
+                  {lastLesson?.duration && (
+                    <p className="text-xs text-gray-400 mt-0.5">⏱ {lastLesson.duration}</p>
+                  )}
                 </div>
                 <Button
                   onClick={() => navigate(`/lessons/${lastLessonId}`)}

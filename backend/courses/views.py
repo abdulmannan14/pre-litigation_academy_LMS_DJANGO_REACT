@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, status
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -97,11 +98,13 @@ class LessonDetailView(generics.RetrieveAPIView):
 class LessonCreateView(generics.CreateAPIView):
     serializer_class = LessonWriteSerializer
     permission_classes = [permissions.IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
 
 class LessonUpdateView(generics.UpdateAPIView):
     serializer_class = LessonWriteSerializer
     permission_classes = [permissions.IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     queryset = Lesson.objects.all()
 
 

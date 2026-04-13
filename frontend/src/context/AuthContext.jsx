@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   // ── Register ───────────────────────────────────────────────────────────────
-  const signup = useCallback(async (name, email, password) => {
+  const signup = useCallback(async (username, name, email, password) => {
     setLoading(true);
     setError(null);
     try {
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
       const firstName = nameParts[0];
       const lastName = nameParts.slice(1).join(' ');
       const { data } = await authApi.register({
-        username: email.split('@')[0] + '_' + Date.now(),
+        username,
         email,
         first_name: firstName,
         last_name: lastName,

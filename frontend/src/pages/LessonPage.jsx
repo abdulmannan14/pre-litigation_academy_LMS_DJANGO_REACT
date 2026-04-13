@@ -25,17 +25,15 @@ function useDebounce(fn, delay) {
 export default function LessonPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { fetchLesson, fetchCourseProgress, markComplete, savePosition, videoPositions } = useCourse();
+  const { fetchLesson, fetchCourse, fetchCourseProgress, markComplete, savePosition, videoPositions } = useCourse();
 
   const [lesson, setLesson] = useState(null);
+  const [course, setCourse] = useState(null);
   const [quiz, setQuiz] = useState(null);
-  const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [marking, setMarking] = useState(false);
   const [marked, setMarked] = useState(false);
-
-  // For prev/next navigation we need the full course structure
   const [allLessons, setAllLessons] = useState([]);
   const currentVideoPosition = useRef(0);
 
@@ -47,10 +45,24 @@ export default function LessonPage() {
     setLoading(true);
     setError(null);
     setMarked(false);
+    setCourse(null);
+    setAllLessons([]);
     try {
-      // Load lesson
       const lessonData = await fetchLesson(lessonId);
       setLesson(lessonData);
+
+      // Fetch course to build prev/next navigation and breadcrumb
+      const courseId = lessonData.module?.course;
+      if (courseId) {
+        const courseData = await fetchCourse(courseId);
+        setCourse(courseData);
+        // Build flat ordered list of all lessons across all modules
+        const flat = [];
+        (courseData.modules || []).forEach((m) => {
+          (m.lessons || []).forEach((l) => flat.push(l));
+        });
+        setAllLessons(flat);
+      }
 
       // Try to load quiz (not all lessons have one)
       try {
@@ -59,11 +71,7 @@ export default function LessonPage() {
       } catch {
         setQuiz(null);
       }
-
-      // This lesson belongs to a course via module — we need course_id for progress
-      // The lesson API returns module info — fetch progress using the course
-      // We'll load progress after we identify the course
-    } catch (err) {
+    } catch {
       setError('Failed to load lesson.');
     } finally {
       setLoading(false);
@@ -92,8 +100,7 @@ export default function LessonPage() {
     }
   };
 
-  const handleQuizComplete = async (score, total) => {
-    // Mark lesson complete when quiz is submitted
+  const handleQuizComplete = async () => {
     if (!marked) await handleMarkComplete();
   };
 
@@ -101,17 +108,34 @@ export default function LessonPage() {
   if (error || !lesson) return <Layout><ErrorMessage message={error || 'Lesson not found.'} onRetry={load} /></Layout>;
 
   const savedPosition = videoPositions[Number(lessonId)] || 0;
+  const currentIndex = allLessons.findIndex((l) => l.id === Number(lessonId));
+  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex >= 0 && currentIndex < allLessons.length - 1
+    ? allLessons[currentIndex + 1]
+    : null;
 
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
+
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-gray-400 mb-4 flex-wrap">
           <button onClick={() => navigate('/dashboard')} className="hover:text-secondary transition-colors">
             Dashboard
           </button>
+          {course && (
+            <>
+              <span>/</span>
+              <button
+                onClick={() => navigate(`/courses/${course.id}`)}
+                className="hover:text-secondary transition-colors truncate max-w-[180px]"
+              >
+                {course.title}
+              </button>
+            </>
+          )}
           <span>/</span>
-          <span className="text-textDark font-medium truncate">{lesson.title}</span>
+          <span className="text-textDark font-medium truncate max-w-[200px]">{lesson.title}</span>
         </nav>
 
         {/* Header */}
@@ -119,6 +143,9 @@ export default function LessonPage() {
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               {lesson.duration && <Badge variant="gray">⏱ {lesson.duration}</Badge>}
+              {currentIndex >= 0 && allLessons.length > 0 && (
+                <Badge variant="default">Lesson {currentIndex + 1} of {allLessons.length}</Badge>
+              )}
               {marked && <Badge variant="success">✓ Completed</Badge>}
             </div>
             <h1 className="text-xl font-bold text-textDark">{lesson.title}</h1>
@@ -138,7 +165,7 @@ export default function LessonPage() {
 
         {/* Video Player */}
         <VideoPlayer
-          url={lesson.video_url}
+          url={lesson.video || lesson.video_url}
           lessonId={lesson.id}
           savedPosition={savedPosition}
           onProgress={handleVideoProgress}
@@ -167,15 +194,35 @@ export default function LessonPage() {
 
         {/* Lesson navigation */}
         <div className="mt-8 flex items-center justify-between gap-4">
-          <Button variant="outline" size="md" onClick={() => navigate(-1)}>
-            ← Back
+          {/* Left: prev or back to course */}
+          <Button
+            variant="outline"
+            size="md"
+            onClick={() =>
+              prevLesson
+                ? navigate(`/lessons/${prevLesson.id}`)
+                : navigate(course ? `/courses/${course.id}` : '/dashboard')
+            }
+          >
+            ← {prevLesson ? 'Previous Lesson' : 'Back to Course'}
           </Button>
-          <Button variant="ghost" size="md" onClick={() => navigate('/dashboard')}>
-            Dashboard
-          </Button>
-          {marked && quiz && (
-            <Button variant="primary" size="md" onClick={() => navigate('/dashboard')}>
-              Continue →
+
+          {/* Right: next lesson (always visible) or finish */}
+          {nextLesson ? (
+            <Button
+              variant={marked ? 'primary' : 'ghost'}
+              size="md"
+              onClick={() => navigate(`/lessons/${nextLesson.id}`)}
+            >
+              Next Lesson →
+            </Button>
+          ) : (
+            <Button
+              variant={marked ? 'primary' : 'ghost'}
+              size="md"
+              onClick={() => navigate('/dashboard')}
+            >
+              {marked ? 'Finish Course ✓' : 'Dashboard'}
             </Button>
           )}
         </div>
