@@ -44,15 +44,22 @@ function toFormData(data) {
   return fd;
 }
 
-export const createLesson = (data) =>
-  api.post('/lessons/create/', toFormData(data), {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+// transformRequest removes Content-Type so the browser sets it automatically
+// with the correct multipart/form-data boundary for FormData payloads.
+const multipartConfig = {
+  transformRequest: [
+    (data, headers) => {
+      delete headers['Content-Type'];
+      return data;
+    },
+  ],
+};
 
-export const updateLesson = (id, data) =>
-  api.patch(`/lessons/${id}/update/`, toFormData(data), {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+export const createLesson = (data, onUploadProgress) =>
+  api.post('/lessons/create/', toFormData(data), { ...multipartConfig, onUploadProgress });
+
+export const updateLesson = (id, data, onUploadProgress) =>
+  api.patch(`/lessons/${id}/update/`, toFormData(data), { ...multipartConfig, onUploadProgress });
 
 export const deleteLesson = (id) =>
   api.delete(`/lessons/${id}/delete/`);

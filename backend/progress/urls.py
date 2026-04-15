@@ -8,6 +8,7 @@ from .views import (
     AdminStatsView,
     AdminStudentsView,
     AdminStudentDetailView,
+    AdminEnrollView,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('admin/stats/', AdminStatsView.as_view(), name='admin-stats'),
     path('admin/students/', AdminStudentsView.as_view(), name='admin-students'),
     path('admin/students/<int:pk>/', AdminStudentDetailView.as_view(), name='admin-student-detail'),
+    path('admin/enrollments/', AdminEnrollView.as_view(), name='admin-enrollments'),
 ]

@@ -103,7 +103,19 @@ class ModuleWriteSerializer(serializers.ModelSerializer):
 class LessonWriteSerializer(serializers.ModelSerializer):
     video_file = serializers.FileField(required=False, allow_null=True)
     video_url = serializers.URLField(required=False, allow_blank=True)
+    clear_video_file = serializers.BooleanField(required=False, write_only=True, default=False)
 
     class Meta:
         model = Lesson
-        fields = ('id', 'module', 'title', 'description', 'video_file', 'video_url', 'duration', 'order')
+        fields = ('id', 'module', 'title', 'description', 'video_file', 'video_url', 'duration', 'order', 'clear_video_file')
+
+    def create(self, validated_data):
+        validated_data.pop('clear_video_file', None)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if validated_data.pop('clear_video_file', False):
+            if instance.video_file:
+                instance.video_file.delete(save=False)
+            instance.video_file = None
+        return super().update(instance, validated_data)

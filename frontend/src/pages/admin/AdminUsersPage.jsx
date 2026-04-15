@@ -10,7 +10,11 @@ import {
   createAdminStudent,
   updateAdminStudent,
   deleteAdminStudent,
+  getStudentEnrollments,
+  adminEnrollStudent,
+  adminUnenrollStudent,
 } from '../../api/progressApi';
+import { getCourses } from '../../api/courseApi';
 
 const inputCls =
   'w-full px-3 py-2 rounded-xl border border-[#E5DDD9] text-sm text-textDark bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent';
@@ -147,6 +151,98 @@ function DeleteConfirmModal({ student, onConfirm, onClose, deleting }) {
   );
 }
 
+function EnrollModal({ student, onClose }) {
+  const [courses, setCourses] = useState([]);
+  const [enrolled, setEnrolled] = useState(new Set()); // set of course_id
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(null); // course_id being toggled
+
+  useEffect(() => {
+    Promise.all([getCourses(), getStudentEnrollments(student.id)])
+      .then(([coursesRes, enrollRes]) => {
+        setCourses(coursesRes.data.results ?? coursesRes.data);
+        setEnrolled(new Set(enrollRes.data.map((e) => e.course_id)));
+      })
+      .finally(() => setLoading(false));
+  }, [student.id]);
+
+  const toggle = async (courseId) => {
+    setSaving(courseId);
+    try {
+      if (enrolled.has(courseId)) {
+        await adminUnenrollStudent(student.id, courseId);
+        setEnrolled((prev) => { const s = new Set(prev); s.delete(courseId); return s; });
+      } else {
+        await adminEnrollStudent(student.id, courseId);
+        setEnrolled((prev) => new Set([...prev, courseId]));
+      }
+    } catch { /* silent */ } finally {
+      setSaving(null);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <div className="px-6 py-4 border-b border-[#F0E8E5] flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-textDark">Course Enrollment</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{student.full_name || student.username}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-6 py-4 max-h-96 overflow-y-auto">
+          {loading ? (
+            <p className="text-sm text-gray-400 text-center py-8">Loading courses...</p>
+          ) : courses.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">No courses available.</p>
+          ) : (
+            <div className="space-y-2">
+              {courses.map((course) => {
+                const isEnrolled = enrolled.has(course.id);
+                const isSaving = saving === course.id;
+                return (
+                  <div
+                    key={course.id}
+                    className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
+                      isEnrolled ? 'border-secondary/30 bg-accent' : 'border-[#F0E8E5] bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${isEnrolled ? 'bg-secondary' : 'bg-gray-300'}`} />
+                      <span className="text-sm font-medium text-textDark truncate">{course.title}</span>
+                    </div>
+                    <button
+                      onClick={() => toggle(course.id)}
+                      disabled={isSaving}
+                      className={`shrink-0 ml-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${
+                        isEnrolled
+                          ? 'bg-red-50 text-red-500 hover:bg-red-100'
+                          : 'bg-secondary text-white hover:bg-secondary/90'
+                      }`}
+                    >
+                      {isSaving ? '...' : isEnrolled ? 'Unenroll' : 'Enroll'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="px-6 py-4 border-t border-[#F0E8E5] flex justify-end">
+          <Button variant="primary" size="sm" onClick={onClose}>Done</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminUsersPage() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -156,6 +252,7 @@ export default function AdminUsersPage() {
   // Modal state
   const [modal, setModal] = useState(null); // null | { mode: 'add' } | { mode: 'edit', student }
   const [deleteTarget, setDeleteTarget] = useState(null); // student object
+  const [enrollTarget, setEnrollTarget] = useState(null); // student object
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [modalError, setModalError] = useState('');
@@ -241,6 +338,15 @@ export default function AdminUsersPage() {
   return (
     <AdminLayout>
       {/* Modals */}
+      {enrollTarget && (
+        <EnrollModal
+          student={enrollTarget}
+          onClose={() => {
+            setEnrollTarget(null);
+            load(); // refresh enrolled_courses count
+          }}
+        />
+      )}
       {modal && (
         <UserModal
           mode={modal.mode}
@@ -353,8 +459,14 @@ export default function AdminUsersPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => openEdit(student)}
+                            onClick={() => setEnrollTarget(student)}
                             className="px-3 py-1.5 rounded-lg text-xs font-medium bg-accent text-secondary hover:bg-secondary hover:text-white transition-colors"
+                          >
+                            Enroll
+                          </button>
+                          <button
+                            onClick={() => openEdit(student)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium border border-[#E5DDD9] text-gray-600 hover:bg-background transition-colors"
                           >
                             Edit
                           </button>

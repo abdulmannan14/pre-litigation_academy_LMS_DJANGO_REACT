@@ -147,6 +147,68 @@ class MyProgressView(generics.ListAPIView):
         return CourseEnrollment.objects.filter(user=self.request.user).select_related('course', 'last_lesson')
 
 
+# ─── Admin Enrollment Views ───────────────────────────────────────────────────
+
+class AdminEnrollView(APIView):
+    """
+    GET  /api/admin/enrollments/?student_id=<id>  — list courses a student is enrolled in.
+    POST /api/admin/enrollments/                  — enroll a student in a course.
+    DELETE /api/admin/enrollments/                — unenroll a student from a course.
+    """
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        student_id = request.query_params.get('student_id')
+        if not student_id:
+            return Response({'error': 'student_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            student = User.objects.get(id=student_id, is_staff=False)
+        except User.DoesNotExist:
+            return Response({'error': 'Student not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        enrollments = CourseEnrollment.objects.filter(user=student).select_related('course')
+        data = [
+            {
+                'course_id': e.course_id,
+                'course_title': e.course.title,
+                'enrolled_at': e.enrolled_at,
+                'progress_percentage': e.progress_percentage,
+            }
+            for e in enrollments
+        ]
+        return Response(data)
+
+    def post(self, request):
+        student_id = request.data.get('student_id')
+        course_id = request.data.get('course_id')
+        if not student_id or not course_id:
+            return Response({'error': 'student_id and course_id are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            student = User.objects.get(id=student_id, is_staff=False)
+        except User.DoesNotExist:
+            return Response({'error': 'Student not found.'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        enrollment, created = CourseEnrollment.objects.get_or_create(user=student, course=course)
+        return Response(
+            {'enrolled': True, 'created': created, 'course_id': course_id, 'student_id': student_id},
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request):
+        student_id = request.data.get('student_id')
+        course_id = request.data.get('course_id')
+        if not student_id or not course_id:
+            return Response({'error': 'student_id and course_id are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        deleted, _ = CourseEnrollment.objects.filter(user_id=student_id, course_id=course_id).delete()
+        if not deleted:
+            return Response({'error': 'Enrollment not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'unenrolled': True}, status=status.HTTP_200_OK)
+
+
 # ─── Admin Views ──────────────────────────────────────────────────────────────
 
 class AdminStatsView(APIView):

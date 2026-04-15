@@ -37,11 +37,14 @@ class QuestionWithAnswerSerializer(serializers.ModelSerializer):
 
 class QuizSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True, read_only=True)
-    question_count = serializers.IntegerField(source='question_count', read_only=True)
+    question_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Quiz
         fields = ('id', 'title', 'lesson', 'question_count', 'questions')
+
+    def get_question_count(self, obj):
+        return obj.questions.count()
 
 
 class QuizSubmitSerializer(serializers.Serializer):

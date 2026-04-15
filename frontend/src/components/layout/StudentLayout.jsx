@@ -52,13 +52,9 @@ export default function StudentLayout({ children }) {
     ? displayName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
     : '?';
 
-  const firstCourseId = courses?.[0]?.id;
-
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: Icons.dashboard, end: true },
-    ...(firstCourseId
-      ? [{ to: `/courses/${firstCourseId}`, label: 'My Course', icon: Icons.course }]
-      : []),
+    { to: '/my-courses', label: 'My Courses', icon: Icons.course },
     { to: '/profile', label: 'Profile', icon: Icons.profile },
   ];
 

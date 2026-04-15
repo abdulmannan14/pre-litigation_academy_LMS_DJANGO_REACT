@@ -30,3 +30,12 @@ export const updateAdminStudent = (id, data) =>
 
 export const deleteAdminStudent = (id) =>
   api.delete(`/admin/students/${id}/`);
+
+export const getStudentEnrollments = (studentId) =>
+  api.get(`/admin/enrollments/?student_id=${studentId}`);
+
+export const adminEnrollStudent = (studentId, courseId) =>
+  api.post('/admin/enrollments/', { student_id: studentId, course_id: courseId });
+
+export const adminUnenrollStudent = (studentId, courseId) =>
+  api.delete('/admin/enrollments/', { data: { student_id: studentId, course_id: courseId } });

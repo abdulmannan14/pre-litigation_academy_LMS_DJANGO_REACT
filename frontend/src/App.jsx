@@ -13,9 +13,11 @@ const DashboardPage     = lazy(() => import('./pages/DashboardPage'));
 const CoursePage        = lazy(() => import('./pages/CoursePage'));
 const LessonPage        = lazy(() => import('./pages/LessonPage'));
 const ProfilePage       = lazy(() => import('./pages/ProfilePage'));
-const AdminOverviewPage = lazy(() => import('./pages/admin/AdminOverviewPage'));
-const AdminCoursesPage  = lazy(() => import('./pages/admin/AdminCoursesPage'));
-const AdminUsersPage    = lazy(() => import('./pages/admin/AdminUsersPage'));
+const MyCoursesPage     = lazy(() => import('./pages/MyCoursesPage'));
+const AdminOverviewPage      = lazy(() => import('./pages/admin/AdminOverviewPage'));
+const AdminCoursesPage       = lazy(() => import('./pages/admin/AdminCoursesPage'));
+const AdminCourseDetailPage  = lazy(() => import('./pages/admin/AdminCourseDetailPage'));
+const AdminUsersPage         = lazy(() => import('./pages/admin/AdminUsersPage'));
 
 export default function App() {
   return (
@@ -33,12 +35,14 @@ export default function App() {
               <Route path="/dashboard"         element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/courses/:courseId"  element={<ProtectedRoute><CoursePage /></ProtectedRoute>} />
               <Route path="/lessons/:lessonId"  element={<ProtectedRoute><LessonPage /></ProtectedRoute>} />
+              <Route path="/my-courses"          element={<ProtectedRoute><MyCoursesPage /></ProtectedRoute>} />
               <Route path="/profile"            element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
               {/* Admin */}
-              <Route path="/admin"         element={<ProtectedRoute adminOnly><AdminOverviewPage /></ProtectedRoute>} />
-              <Route path="/admin/courses" element={<ProtectedRoute adminOnly><AdminCoursesPage /></ProtectedRoute>} />
-              <Route path="/admin/users"   element={<ProtectedRoute adminOnly><AdminUsersPage /></ProtectedRoute>} />
+              <Route path="/admin"                    element={<ProtectedRoute adminOnly><AdminOverviewPage /></ProtectedRoute>} />
+              <Route path="/admin/courses"            element={<ProtectedRoute adminOnly><AdminCoursesPage /></ProtectedRoute>} />
+              <Route path="/admin/courses/:courseId"  element={<ProtectedRoute adminOnly><AdminCourseDetailPage /></ProtectedRoute>} />
+              <Route path="/admin/users"              element={<ProtectedRoute adminOnly><AdminUsersPage /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

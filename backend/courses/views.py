@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Course, Module, Lesson
+from progress.models import CourseEnrollment
 from .serializers import (
     CourseSerializer, CourseListSerializer, CourseWriteSerializer,
     ModuleSerializer, ModuleWriteSerializer,
@@ -21,7 +22,11 @@ class CourseListView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Course.objects.all()
-        return Course.objects.filter(is_published=True)
+        # Students only see courses they are enrolled in
+        enrolled_ids = CourseEnrollment.objects.filter(
+            user=self.request.user
+        ).values_list('course_id', flat=True)
+        return Course.objects.filter(id__in=enrolled_ids, is_published=True)
 
 
 class CourseDetailView(generics.RetrieveAPIView):

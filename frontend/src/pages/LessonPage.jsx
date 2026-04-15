@@ -179,14 +179,35 @@ export default function LessonPage() {
           </div>
         )}
 
-        {/* Quiz */}
-        {quiz ? (
+        {/* Quiz — only visible after marking complete */}
+        {quiz && !marked && (
+          <div className="mt-8 rounded-2xl border border-[#F0E8E5] bg-white overflow-hidden">
+            <div className="flex flex-col items-center justify-center gap-3 py-10 px-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
+                <svg className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              <p className="font-semibold text-textDark">Quiz locked</p>
+              <p className="text-sm text-gray-500">Mark this lesson as complete to unlock the quiz.</p>
+              <button
+                onClick={handleMarkComplete}
+                disabled={marking}
+                className="mt-1 px-5 py-2 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-secondary/90 transition-colors disabled:opacity-60"
+              >
+                {marking ? 'Saving...' : 'Mark as Complete & Unlock Quiz'}
+              </button>
+            </div>
+          </div>
+        )}
+        {quiz && marked && (
           <QuizSection
             quiz={quiz}
             lessonId={lesson.id}
             onComplete={handleQuizComplete}
           />
-        ) : (
+        )}
+        {!quiz && (
           <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-center text-sm text-gray-400">
             No quiz for this lesson.
           </div>
