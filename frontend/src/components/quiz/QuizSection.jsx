@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Button from '../common/Button';
 import Badge from '../common/Badge';
 import Spinner from '../common/Spinner';
@@ -42,11 +43,15 @@ export default function QuizSection({ quiz, lessonId, onComplete }) {
       setResult(data);
       setSubmitted(true);
       onComplete && onComplete(data.score, data.total_questions);
+      if (data.passed) {
+        toast.success(`Passed! You scored ${data.score}/${data.total_questions}`);
+      } else {
+        toast(`Score: ${data.score}/${data.total_questions} — Keep trying!`, { icon: '📊' });
+      }
     } catch (err) {
-      setApiError(
-        err.response?.data?.detail ||
-        'Failed to submit quiz. Please check your connection.',
-      );
+      const msg = err.response?.data?.detail || 'Failed to submit quiz. Please check your connection.';
+      setApiError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

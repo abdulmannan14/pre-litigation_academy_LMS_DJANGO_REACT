@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
@@ -35,7 +36,10 @@ export default function LoginPage() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     const result = await login(form.username, form.password);
     if (result.success) {
+      toast.success('Welcome back!');
       navigate(result.role === 'admin' ? '/admin' : '/dashboard');
+    } else {
+      toast.error(result.error || 'Login failed.');
     }
   };
 

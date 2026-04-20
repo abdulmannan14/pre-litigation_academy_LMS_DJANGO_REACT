@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { checkEmail, checkUsername } from '../api/authApi';
 import Input from '../components/common/Input';
@@ -136,7 +137,12 @@ export default function SignupPage() {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     const result = await signup(form.username.trim(), form.name, form.email, form.password);
-    if (result.success) navigate('/dashboard');
+    if (result.success) {
+      toast.success('Account created! Welcome.');
+      navigate('/dashboard');
+    } else {
+      toast.error(result.error || 'Failed to create account.');
+    }
   };
 
   const passwordMismatch = form.confirm.length > 0 && form.confirm !== form.password;

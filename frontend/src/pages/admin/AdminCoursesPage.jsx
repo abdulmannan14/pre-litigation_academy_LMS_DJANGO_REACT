@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import AdminLayout from '../../components/layout/AdminLayout';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -65,8 +66,11 @@ export default function AdminCoursesPage() {
       setForm({ title: '', description: '', is_published: false });
       setShowAdd(false);
       setFormErrors({});
+      toast.success('Course created successfully.');
     } catch (err) {
-      setFormErrors({ api: err.response?.data?.detail || 'Failed to create.' });
+      const msg = err.response?.data?.detail || 'Failed to create course.';
+      setFormErrors({ api: msg });
+      toast.error(msg);
     } finally { setSaving(false); }
   };
 
@@ -74,7 +78,8 @@ export default function AdminCoursesPage() {
     try {
       await courseApi.updateCourse(course.id, { is_published: !course.is_published });
       setCourses((prev) => prev.map((c) => c.id === course.id ? { ...c, is_published: !c.is_published } : c));
-    } catch { }
+      toast.success(course.is_published ? 'Course unpublished.' : 'Course published.');
+    } catch { toast.error('Failed to update course.'); }
   };
 
   const handleStartEdit = (course) => {
@@ -89,13 +94,17 @@ export default function AdminCoursesPage() {
       await courseApi.updateCourse(id, editForm);
       setCourses((prev) => prev.map((c) => c.id === id ? { ...c, ...editForm } : c));
       setEditingId(null);
-    } catch { } finally { setSavingEdit(false); }
+      toast.success('Course updated.');
+    } catch { toast.error('Failed to update course.'); } finally { setSavingEdit(false); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this course? This cannot be undone.')) return;
-    await courseApi.deleteCourse(id);
-    setCourses((prev) => prev.filter((c) => c.id !== id));
+    try {
+      await courseApi.deleteCourse(id);
+      setCourses((prev) => prev.filter((c) => c.id !== id));
+      toast.success('Course deleted.');
+    } catch { toast.error('Failed to delete course.'); }
   };
 
   if (loading) return <AdminLayout><SectionLoader message="Loading courses..." /></AdminLayout>;

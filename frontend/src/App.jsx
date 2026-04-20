@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CourseProvider } from './context/CourseContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
@@ -22,6 +23,7 @@ const AdminUsersPage         = lazy(() => import('./pages/admin/AdminUsersPage')
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" toastOptions={{ duration: 3000, style: { fontSize: '14px' } }} />
       <AuthProvider>
         <CourseProvider>
           <Suspense fallback={<PageLoader />}>

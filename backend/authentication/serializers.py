@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -53,8 +54,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
+        username = attrs.get('username', '')
+        password = attrs.get('password', '')
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise AuthenticationFailed('No active account found.')
+
+        if not user.check_password(password):
+            raise AuthenticationFailed('No active account found.')
+
         data = super().validate(attrs)
-        user = self.user
         data['user'] = {
             'id': user.id,
             'username': user.username,

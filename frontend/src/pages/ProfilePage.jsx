@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/layout/Layout';
 import Card from '../components/common/Card';
@@ -74,12 +75,10 @@ export default function ProfilePage() {
     username: user?.username || '',
   });
   const [profileSaving, setProfileSaving] = useState(false);
-  const [profileMsg, setProfileMsg] = useState({ type: '', text: '' });
 
   // Password form
   const [pwForm, setPwForm] = useState({ old_password: '', new_password: '', confirm: '' });
   const [pwSaving, setPwSaving] = useState(false);
-  const [pwMsg, setPwMsg] = useState({ type: '', text: '' });
 
   const setProfile = (field) => (e) =>
     setProfileForm((f) => ({ ...f, [field]: e.target.value }));
@@ -88,7 +87,6 @@ export default function ProfilePage() {
 
   const handleSaveProfile = async () => {
     setProfileSaving(true);
-    setProfileMsg({ type: '', text: '' });
     try {
       await updateProfile({
         first_name: profileForm.first_name.trim(),
@@ -96,7 +94,7 @@ export default function ProfilePage() {
         email: profileForm.email.trim(),
         username: profileForm.username.trim(),
       });
-      setProfileMsg({ type: 'success', text: 'Profile updated successfully.' });
+      toast.success('Profile updated successfully.');
     } catch (err) {
       const data = err.response?.data;
       let msg = 'Failed to update profile.';
@@ -107,7 +105,7 @@ export default function ProfilePage() {
           msg = `${firstKey}: ${Array.isArray(val) ? val[0] : val}`;
         }
       }
-      setProfileMsg({ type: 'error', text: msg });
+      toast.error(msg);
     } finally {
       setProfileSaving(false);
     }
@@ -115,26 +113,25 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     if (!pwForm.old_password || !pwForm.new_password || !pwForm.confirm) {
-      setPwMsg({ type: 'error', text: 'Please fill in all password fields.' });
+      toast.error('Please fill in all password fields.');
       return;
     }
     if (pwForm.new_password !== pwForm.confirm) {
-      setPwMsg({ type: 'error', text: 'New passwords do not match.' });
+      toast.error('New passwords do not match.');
       return;
     }
     if (pwForm.new_password.length < 6) {
-      setPwMsg({ type: 'error', text: 'New password must be at least 6 characters.' });
+      toast.error('New password must be at least 6 characters.');
       return;
     }
     setPwSaving(true);
-    setPwMsg({ type: '', text: '' });
     try {
       await changePassword({ old_password: pwForm.old_password, new_password: pwForm.new_password });
-      setPwMsg({ type: 'success', text: 'Password changed successfully.' });
+      toast.success('Password changed successfully.');
       setPwForm({ old_password: '', new_password: '', confirm: '' });
     } catch (err) {
       const msg = err.response?.data?.error || 'Failed to change password.';
-      setPwMsg({ type: 'error', text: msg });
+      toast.error(msg);
     } finally {
       setPwSaving(false);
     }
@@ -171,12 +168,6 @@ export default function ProfilePage() {
         {/* Profile info */}
         <Card className="mb-6">
           <h2 className="font-semibold text-textDark mb-5">Personal Information</h2>
-
-          {profileMsg.text && (
-            <div className="mb-4">
-              <Alert type={profileMsg.type} message={profileMsg.text} onDismiss={() => setProfileMsg({ type: '', text: '' })} />
-            </div>
-          )}
 
           <div className="grid sm:grid-cols-2 gap-4 mb-4">
             <div>
@@ -233,12 +224,6 @@ export default function ProfilePage() {
         {/* Change password */}
         <Card>
           <h2 className="font-semibold text-textDark mb-5">Change Password</h2>
-
-          {pwMsg.text && (
-            <div className="mb-4">
-              <Alert type={pwMsg.type} message={pwMsg.text} onDismiss={() => setPwMsg({ type: '', text: '' })} />
-            </div>
-          )}
 
           <div className="space-y-4 mb-6">
             <div>

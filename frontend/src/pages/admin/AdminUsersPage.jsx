@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import AdminLayout from '../../components/layout/AdminLayout';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
@@ -168,15 +169,18 @@ function EnrollModal({ student, onClose }) {
 
   const toggle = async (courseId) => {
     setSaving(courseId);
+    const wasEnrolled = enrolled.has(courseId);
     try {
-      if (enrolled.has(courseId)) {
+      if (wasEnrolled) {
         await adminUnenrollStudent(student.id, courseId);
         setEnrolled((prev) => { const s = new Set(prev); s.delete(courseId); return s; });
+        toast.success('Student unenrolled.');
       } else {
         await adminEnrollStudent(student.id, courseId);
         setEnrolled((prev) => new Set([...prev, courseId]));
+        toast.success('Student enrolled.');
       }
-    } catch { /* silent */ } finally {
+    } catch { toast.error(wasEnrolled ? 'Failed to unenroll.' : 'Failed to enroll.'); } finally {
       setSaving(null);
     }
   };
@@ -284,6 +288,7 @@ export default function AdminUsersPage() {
         const payload = { ...form };
         const { data } = await createAdminStudent(payload);
         setStudents((prev) => [data, ...prev]);
+        toast.success('Student created successfully.');
       } else {
         const payload = { ...form };
         if (!payload.password) delete payload.password;
@@ -295,11 +300,13 @@ export default function AdminUsersPage() {
               : s
           )
         );
+        toast.success('Student updated.');
       }
       closeModal();
     } catch (err) {
       const msg = err.response?.data?.error || 'Something went wrong.';
       setModalError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -311,8 +318,10 @@ export default function AdminUsersPage() {
       await deleteAdminStudent(deleteTarget.id);
       setStudents((prev) => prev.filter((s) => s.id !== deleteTarget.id));
       setDeleteTarget(null);
+      toast.success('Student deleted.');
     } catch {
       setDeleteTarget(null);
+      toast.error('Failed to delete student.');
     } finally {
       setDeleting(false);
     }

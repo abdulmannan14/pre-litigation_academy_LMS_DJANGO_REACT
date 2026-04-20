@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useCourse } from '../context/CourseContext';
 import { getQuiz } from '../api/quizApi';
 import Layout from '../components/layout/Layout';
@@ -95,6 +96,9 @@ export default function LessonPage() {
     try {
       await markComplete(Number(lessonId), lesson?.module?.course ?? 0, currentVideoPosition.current);
       setMarked(true);
+      toast.success('Lesson marked as complete!');
+    } catch {
+      toast.error('Failed to save progress.');
     } finally {
       setMarking(false);
     }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import AdminLayout from '../../components/layout/AdminLayout';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
@@ -44,7 +45,8 @@ function QuestionRow({ question, quizId, onUpdated, onDeleted }) {
       const { data } = await quizApi.updateQuestion(question.id, { ...form, quiz: quizId });
       onUpdated(data);
       setEditing(false);
-    } catch { } finally { setSaving(false); }
+      toast.success('Question updated.');
+    } catch { toast.error('Failed to update question.'); } finally { setSaving(false); }
   };
 
   if (!editing) {
@@ -57,7 +59,7 @@ function QuestionRow({ question, quizId, onUpdated, onDeleted }) {
           </p>
           <div className="flex gap-1 shrink-0">
             <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit</Button>
-            <Button size="sm" variant="danger" onClick={async () => { await quizApi.deleteQuestion(question.id); onDeleted(question.id); }}>Del</Button>
+            <Button size="sm" variant="danger" onClick={async () => { try { await quizApi.deleteQuestion(question.id); onDeleted(question.id); toast.success('Question deleted.'); } catch { toast.error('Failed to delete question.'); } }}>Del</Button>
           </div>
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -133,7 +135,8 @@ function QuizManager({ lessonId }) {
     try {
       const { data } = await quizApi.createQuiz({ lesson: lessonId, title: '' });
       setQuiz({ ...data, questions: [] });
-    } catch { } finally { setCreating(false); }
+      toast.success('Quiz created.');
+    } catch { toast.error('Failed to create quiz.'); } finally { setCreating(false); }
   };
 
   const handleAddQuestion = async () => {
@@ -143,7 +146,8 @@ function QuizManager({ lessonId }) {
       setQuiz((prev) => ({ ...prev, questions: [...(prev.questions || []), data] }));
       setQForm({ text: '', option_a: '', option_b: '', option_c: '', option_d: '', correct_answer: 'A', explanation: '', order: 1 });
       setAddingQuestion(false);
-    } catch { } finally { setSavingQ(false); }
+      toast.success('Question added.');
+    } catch { toast.error('Failed to add question.'); } finally { setSavingQ(false); }
   };
 
   if (loading) return <p className="text-xs text-gray-400 py-2">Loading quiz...</p>;
@@ -152,7 +156,7 @@ function QuizManager({ lessonId }) {
     <div className="border-t border-[#F0E8E5] mt-3 pt-3">
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Quiz</p>
-        {quiz && <Button size="sm" variant="danger" onClick={async () => { if (window.confirm('Delete quiz?')) { await quizApi.deleteQuiz(quiz.id); setQuiz(null); } }}>Delete Quiz</Button>}
+        {quiz && <Button size="sm" variant="danger" onClick={async () => { if (window.confirm('Delete quiz?')) { try { await quizApi.deleteQuiz(quiz.id); setQuiz(null); toast.success('Quiz deleted.'); } catch { toast.error('Failed to delete quiz.'); } } }}>Delete Quiz</Button>}
       </div>
       {!quiz ? (
         <Button size="sm" variant="outline" onClick={handleCreateQuiz} disabled={creating}>{creating ? 'Creating...' : '+ Create Quiz'}</Button>
@@ -234,7 +238,8 @@ function LessonCard({ lesson, moduleId, index, onUpdated, onDeleted }) {
       setEditing(false);
       setVideoFile(null);
       setClearVideo(false);
-    } catch { } finally { setSaving(false); setUploadProgress(0); }
+      toast.success('Lesson updated.');
+    } catch { toast.error('Failed to update lesson.'); } finally { setSaving(false); setUploadProgress(0); }
   };
 
   return (
@@ -252,7 +257,7 @@ function LessonCard({ lesson, moduleId, index, onUpdated, onDeleted }) {
         <div className="flex gap-1 shrink-0">
           <Button size="sm" variant="ghost" onClick={() => { setEditing(!editing); setQuizOpen(false); }}>{editing ? 'Close' : 'Edit'}</Button>
           <Button size="sm" variant="ghost" onClick={() => { setQuizOpen(!quizOpen); setEditing(false); }}>{quizOpen ? 'Hide Quiz' : 'Quiz'}</Button>
-          <Button size="sm" variant="danger" onClick={async () => { if (window.confirm(`Delete "${lesson.title}"?`)) { await courseApi.deleteLesson(lesson.id); onDeleted(lesson.id); } }}>Del</Button>
+          <Button size="sm" variant="danger" onClick={async () => { if (window.confirm(`Delete "${lesson.title}"?`)) { try { await courseApi.deleteLesson(lesson.id); onDeleted(lesson.id); toast.success('Lesson deleted.'); } catch { toast.error('Failed to delete lesson.'); } } }}>Del</Button>
         </div>
       </div>
 
@@ -411,14 +416,18 @@ export default function AdminCourseDetailPage() {
         modules: prev.modules.map((m) => m.id === module.id ? { ...m, title: data.title } : m),
       }));
       setEditingModuleId(null);
-    } catch { } finally { setSavingModule(false); }
+      toast.success('Module updated.');
+    } catch { toast.error('Failed to update module.'); } finally { setSavingModule(false); }
   };
 
   const handleDeleteModule = async (module) => {
     if (!window.confirm(`Delete module "${module.title}" and all its lessons?`)) return;
-    await courseApi.deleteModule(module.id);
-    setCourse((prev) => ({ ...prev, modules: prev.modules.filter((m) => m.id !== module.id) }));
-    if (selectedModuleId === module.id) setSelectedModuleId(course.modules.find((m) => m.id !== module.id)?.id ?? null);
+    try {
+      await courseApi.deleteModule(module.id);
+      setCourse((prev) => ({ ...prev, modules: prev.modules.filter((m) => m.id !== module.id) }));
+      if (selectedModuleId === module.id) setSelectedModuleId(course.modules.find((m) => m.id !== module.id)?.id ?? null);
+      toast.success('Module deleted.');
+    } catch { toast.error('Failed to delete module.'); }
   };
 
   const handleAddModule = async () => {
@@ -430,7 +439,8 @@ export default function AdminCourseDetailPage() {
       setNewModuleTitle('');
       setAddingModule(false);
       setSelectedModuleId(data.id);
-    } catch { } finally { setSavingNewModule(false); }
+      toast.success('Module added.');
+    } catch { toast.error('Failed to add module.'); } finally { setSavingNewModule(false); }
   };
 
   // ── Lesson actions ────────────────────────────────────────────────────────────
@@ -466,7 +476,8 @@ export default function AdminCourseDetailPage() {
       setLessonForm({ title: '', description: '', duration: '', order: '' });
       setNewLessonFile(null);
       setAddingLesson(false);
-    } catch { } finally { setSavingLesson(false); setLessonUploadProgress(0); }
+      toast.success('Lesson added.');
+    } catch { toast.error('Failed to add lesson.'); } finally { setSavingLesson(false); setLessonUploadProgress(0); }
   };
 
   const handleLessonUpdated = (updated) => {
@@ -498,14 +509,16 @@ export default function AdminCourseDetailPage() {
       await courseApi.updateCourse(courseId, courseEditForm);
       setCourse((prev) => ({ ...prev, ...courseEditForm }));
       setEditingCourse(false);
-    } catch { } finally { setSavingCourse(false); }
+      toast.success('Course updated.');
+    } catch { toast.error('Failed to update course.'); } finally { setSavingCourse(false); }
   };
 
   const handlePublishToggle = async () => {
     try {
       await courseApi.updateCourse(courseId, { is_published: !course.is_published });
       setCourse((prev) => ({ ...prev, is_published: !prev.is_published }));
-    } catch { }
+      toast.success(course.is_published ? 'Course unpublished.' : 'Course published.');
+    } catch { toast.error('Failed to update course.'); }
   };
 
   // ─────────────────────────────────────────────────────────────────────────────

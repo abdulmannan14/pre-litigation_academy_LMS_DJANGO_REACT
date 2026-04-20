@@ -14,10 +14,10 @@ function NativePlayer({ url, lessonId, savedPosition, onProgress }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const hasSeeked = useRef(false);
+  const seekingRef = useRef(false);
 
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
-  const [seeking, setSeeking] = useState(false);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
@@ -60,7 +60,7 @@ function NativePlayer({ url, lessonId, savedPosition, onProgress }) {
 
   const handleTimeUpdate = () => {
     const vid = videoRef.current;
-    if (!vid || seeking) return;
+    if (!vid || seekingRef.current) return;
     const frac = vid.duration ? vid.currentTime / vid.duration : 0;
     setPlayed(frac);
     onProgress && onProgress(vid.currentTime);
@@ -77,15 +77,18 @@ function NativePlayer({ url, lessonId, savedPosition, onProgress }) {
     }
   };
 
-  const handleSeekMouseDown = () => setSeeking(true);
+  const handleSeekMouseDown = () => { seekingRef.current = true; };
   const handleSeekChange = (e) => {
+    setPlayed(parseFloat(e.target.value));
+  };
+  const handleSeekMouseUp = (e) => {
+    seekingRef.current = false;
     const frac = parseFloat(e.target.value);
     setPlayed(frac);
     if (videoRef.current) {
       videoRef.current.currentTime = frac * videoRef.current.duration;
     }
   };
-  const handleSeekMouseUp = () => setSeeking(false);
 
   const handleVolumeChange = (e) => {
     const v = parseFloat(e.target.value);
@@ -163,6 +166,7 @@ function NativePlayer({ url, lessonId, savedPosition, onProgress }) {
             step="any"
             value={played}
             onMouseDown={handleSeekMouseDown}
+            onTouchStart={handleSeekMouseDown}
             onChange={handleSeekChange}
             onMouseUp={handleSeekMouseUp}
             onTouchEnd={handleSeekMouseUp}
@@ -253,11 +257,11 @@ function NativePlayer({ url, lessonId, savedPosition, onProgress }) {
 function YouTubePlayer({ url, lessonId, savedPosition, onProgress }) {
   const playerRef = useRef(null);
   const hasSeeked = useRef(false);
+  const seekingRef = useRef(false);
 
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
-  const [seeking, setSeeking] = useState(false);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
@@ -280,16 +284,16 @@ function YouTubePlayer({ url, lessonId, savedPosition, onProgress }) {
   }, [ready, savedPosition]);
 
   const handleProgress = (state) => {
-    if (!seeking) {
+    if (!seekingRef.current) {
       setPlayed(state.played);
       onProgress && onProgress(state.playedSeconds);
     }
   };
 
-  const handleSeekMouseDown = () => setSeeking(true);
+  const handleSeekMouseDown = () => { seekingRef.current = true; };
   const handleSeekChange = (e) => setPlayed(parseFloat(e.target.value));
   const handleSeekMouseUp = (e) => {
-    setSeeking(false);
+    seekingRef.current = false;
     playerRef.current?.seekTo(parseFloat(e.target.value));
   };
 
@@ -349,6 +353,7 @@ function YouTubePlayer({ url, lessonId, savedPosition, onProgress }) {
           <input
             type="range" min={0} max={0.999999} step="any" value={played}
             onMouseDown={handleSeekMouseDown}
+            onTouchStart={handleSeekMouseDown}
             onChange={handleSeekChange}
             onMouseUp={handleSeekMouseUp}
             onTouchEnd={handleSeekMouseUp}
