@@ -94,12 +94,8 @@ function Navbar() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#F0E8E5]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="Pre-Litigation Academy" className="h-9 w-auto" />
-          <span className="font-bold text-textDark text-sm hidden sm:block leading-tight">
-            Pre-Litigation<br />
-            <span className="text-secondary font-semibold">Academy</span>
-          </span>
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="Pre-Litigation Academy" className="h-14 w-auto" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
