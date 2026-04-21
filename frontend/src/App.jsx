@@ -23,7 +23,7 @@ const AdminUsersPage         = lazy(() => import('./pages/admin/AdminUsersPage')
 export default function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-right" toastOptions={{ duration: 3000, style: { fontSize: '14px' } }} />
+      <Toaster position="top-right" containerStyle={{ top: 70, right: 16 }} toastOptions={{ duration: 3000, style: { fontSize: '14px' } }} />
       <AuthProvider>
         <CourseProvider>
           <Suspense fallback={<PageLoader />}>
