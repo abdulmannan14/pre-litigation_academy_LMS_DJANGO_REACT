@@ -4,7 +4,7 @@ export default function Badge({ children, variant = 'default', className = '' })
     success: 'bg-green-100 text-green-700',
     warning: 'bg-yellow-100 text-yellow-700',
     danger: 'bg-red-100 text-red-600',
-    gray: 'bg-gray-100 text-gray-600',
+    gray: 'bg-surfaceHigh text-gray-400',
   };
 
   return (

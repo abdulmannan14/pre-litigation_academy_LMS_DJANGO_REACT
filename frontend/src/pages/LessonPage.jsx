@@ -40,6 +40,12 @@ export default function LessonPage() {
 
   useEffect(() => {
     load();
+    // Save position immediately when user leaves the lesson page
+    return () => {
+      if (currentVideoPosition.current > 0) {
+        savePosition(Number(lessonId), currentVideoPosition.current);
+      }
+    };
   }, [lessonId]);
 
   const load = async () => {
@@ -152,7 +158,7 @@ export default function LessonPage() {
               )}
               {marked && <Badge variant="success">✓ Completed</Badge>}
             </div>
-            <h1 className="text-xl font-bold text-textDark">{lesson.title}</h1>
+            <h1 className="text-xl font-bold text-textDark brand-heading">{lesson.title}</h1>
           </div>
           {!marked && (
             <Button
@@ -162,7 +168,7 @@ export default function LessonPage() {
               className="shrink-0"
               disabled={marking}
             >
-              {marking ? 'Saving...' : 'Mark Complete'}
+              {marking ? 'Saving...' : 'Mark Lesson Complete'}
             </Button>
           )}
         </div>
@@ -193,13 +199,13 @@ export default function LessonPage() {
                 </svg>
               </div>
               <p className="font-semibold text-textDark">Quiz locked</p>
-              <p className="text-sm text-gray-500">Mark this lesson as complete to unlock the quiz.</p>
+              <p className="text-sm text-gray-500">Complete this lesson to unlock the quiz and test your understanding.</p>
               <button
                 onClick={handleMarkComplete}
                 disabled={marking}
                 className="mt-1 px-5 py-2 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-secondary/90 transition-colors disabled:opacity-60"
               >
-                {marking ? 'Saving...' : 'Mark as Complete & Unlock Quiz'}
+                {marking ? 'Saving...' : 'Mark Lesson Complete & Unlock Quiz'}
               </button>
             </div>
           </div>

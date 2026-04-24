@@ -9,7 +9,7 @@ import ErrorMessage from '../components/common/ErrorMessage';
 
 export default function MyCoursesPage() {
   const { user } = useAuth();
-  const { courses, coursesLoading, coursesError, fetchCourses, fetchCourseProgress, fetchLesson } = useCourse();
+  const { courses, coursesLoading, coursesError, fetchCourses, refreshCourseProgress, fetchLesson } = useCourse();
   const navigate = useNavigate();
 
   const [progressMap, setProgressMap] = useState({});
@@ -26,7 +26,7 @@ export default function MyCoursesPage() {
     setProgressLoading(true);
     const results = await Promise.all(
       courses.map(async (c) => {
-        const p = await fetchCourseProgress(c.id);
+        const p = await refreshCourseProgress(c.id); // always fetch fresh — bypasses cache
         return [c.id, p];
       }),
     );
@@ -60,7 +60,7 @@ export default function MyCoursesPage() {
     <Layout>
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-textDark">My Courses</h1>
+        <h1 className="text-2xl font-bold text-textDark brand-heading">My Courses</h1>
         <p className="text-sm text-gray-500 mt-0.5">
           Welcome back, {user?.first_name || user?.username}. Keep up the great work!
         </p>
@@ -144,7 +144,7 @@ export default function MyCoursesPage() {
                 className="bg-white rounded-2xl border border-[#F0E8E5] overflow-hidden flex flex-col hover:shadow-md transition-shadow"
               >
                 {/* Thumbnail */}
-                <div className="relative h-40 bg-accent overflow-hidden">
+                <div className="relative h-32 bg-accent overflow-hidden">
                   {course.thumbnail ? (
                     <img
                       src={course.thumbnail}
@@ -164,12 +164,12 @@ export default function MyCoursesPage() {
                 </div>
 
                 {/* Card body */}
-                <div className="flex flex-col flex-1 p-5">
+                <div className="flex flex-col flex-1 p-4">
                   <h2 className="font-semibold text-textDark text-base mb-1 leading-snug line-clamp-2">
                     {course.title}
                   </h2>
                   <p className="text-xs text-gray-400 mb-4">
-                    {course.module_count ?? 0} modules · {total} lessons
+                    {course.module_count ?? 0} {(course.module_count ?? 0) === 1 ? 'Module' : 'Modules'} • {total} {total === 1 ? 'Lesson' : 'Lessons'}
                   </p>
 
                   <div className="mt-auto">
@@ -185,19 +185,38 @@ export default function MyCoursesPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => navigate(`/courses/${course.id}`)}
-                        className="flex-1 px-3 py-2 rounded-xl border border-[#E5DDD9] text-sm font-medium text-textDark hover:bg-background transition-colors"
-                      >
-                        View Course
-                      </button>
-                      {total > 0 && (
-                        <button
-                          onClick={() => navigate(lastId ? `/lessons/${lastId}` : `/courses/${course.id}`)}
-                          className="flex-1 px-3 py-2 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-secondary/90 transition-colors"
-                        >
-                          {pct > 0 ? 'Resume' : 'Start'}
-                        </button>
+                      {pct === 100 ? (
+                        <>
+                          <button
+                            onClick={() => navigate(`/courses/${course.id}`)}
+                            className="flex-1 px-3 py-2 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-secondary/90 transition-colors"
+                          >
+                            Review Course
+                          </button>
+                          <button
+                            disabled
+                            className="flex-1 px-3 py-2 rounded-xl border border-[#E5DDD9] text-sm font-medium text-gray-400 cursor-not-allowed opacity-60"
+                          >
+                            View Certificate
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {total > 0 && (
+                            <button
+                              onClick={() => navigate(lastId ? `/lessons/${lastId}` : `/courses/${course.id}`)}
+                              className="flex-1 px-3 py-2 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-secondary/90 transition-colors"
+                            >
+                              {pct > 0 ? 'Resume Course' : 'Start Course'}
+                            </button>
+                          )}
+                          <button
+                            onClick={() => navigate(`/courses/${course.id}`)}
+                            className="flex-1 px-3 py-2 rounded-xl border border-[#E5DDD9] text-sm font-medium text-textDark hover:bg-background transition-colors"
+                          >
+                            View Details
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>

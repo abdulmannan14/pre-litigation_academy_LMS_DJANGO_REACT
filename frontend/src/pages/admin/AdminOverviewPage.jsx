@@ -49,7 +49,7 @@ export default function AdminOverviewPage() {
     <AdminLayout>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-textDark">Dashboard Overview</h1>
-        <p className="text-sm text-gray-500 mt-1">Real-time snapshot of your platform.</p>
+        <p className="text-sm text-gray-400 mt-1">Real-time snapshot of your platform.</p>
       </div>
 
       {/* Stat cards */}
@@ -59,7 +59,7 @@ export default function AdminOverviewPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-2xl font-bold text-textDark">{s.value}</p>
-                <p className="text-sm text-gray-500 mt-0.5">{s.label}</p>
+                <p className="text-sm text-gray-400 mt-0.5">{s.label}</p>
                 <p className="text-xs text-secondary mt-1">{s.sub}</p>
               </div>
               <span className="text-2xl">{s.icon}</span>

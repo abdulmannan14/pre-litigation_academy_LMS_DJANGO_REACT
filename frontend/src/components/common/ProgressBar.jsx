@@ -17,8 +17,8 @@ export default function ProgressBar({ value = 0, showLabel = true, size = 'md', 
       )}
       <div className={`w-full bg-accent rounded-full ${heights[size]}`}>
         <div
-          className={`bg-secondary rounded-full transition-all duration-500 ${heights[size]}`}
-          style={{ width: `${clamped}%` }}
+          className={`rounded-full transition-all duration-500 ${heights[size]}`}
+          style={{ width: `${clamped}%`, background: 'linear-gradient(90deg, #A55850 0%, #C87B72 100%)' }}
         />
       </div>
     </div>

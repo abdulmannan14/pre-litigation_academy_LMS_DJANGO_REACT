@@ -17,9 +17,9 @@ export default function AdminLayout({ children }) {
   return (
     <div className="h-screen bg-background flex overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-60 bg-white border-r border-[#F0E8E5] flex flex-col shrink-0">
+      <aside className="w-60 bg-surface border-r border-divider flex flex-col shrink-0">
         {/* Logo */}
-        <div className="px-4 py-5 border-b border-[#F0E8E5]">
+        <div className="px-4 py-5 border-b border-divider">
           <img src={logo} alt="Pre-Litigation Academy" className="h-14 w-auto" />
         </div>
 
@@ -45,10 +45,10 @@ export default function AdminLayout({ children }) {
         </nav>
 
         {/* Logout */}
-        <div className="px-4 py-4 border-t border-[#F0E8E5]">
+        <div className="px-4 py-4 border-t border-divider">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-[#b5726a] transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-secondaryDark transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -62,7 +62,7 @@ export default function AdminLayout({ children }) {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Top header */}
-        <header className="h-16 bg-white border-b border-[#F0E8E5] flex items-center justify-between px-6 shrink-0">
+        <header className="h-16 bg-surface border-b border-divider flex items-center justify-between px-6 shrink-0">
           <p className="text-sm font-medium text-gray-400">Admin Portal</p>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-xs font-semibold text-secondary">

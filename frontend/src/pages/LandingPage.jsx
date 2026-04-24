@@ -22,40 +22,40 @@ const FEATURES = [
   {
     icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
     title: 'Structured Curriculum',
-    desc: 'Carefully sequenced modules that take you from fundamentals to advanced pre-litigation strategy.',
+    desc: 'Step-by-step modules that mirror real law firm workflows—from intake to settlement.',
   },
   {
     icon: 'M15 10l4.553-2.069A1 1 0 0121 8.882V19a2 2 0 01-2 2H5a2 2 0 01-2-2V8.882a1 1 0 01.447-.951L8 10M12 2v8m0 0L8 6m4 4l4-4',
     title: 'Video-First Learning',
-    desc: 'HD video lessons from seasoned legal professionals, watchable on any device at your own pace.',
+    desc: 'Clear, practical lessons designed for beginners—no legal background required.',
   },
   {
     icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
     title: 'Knowledge Quizzes',
-    desc: 'Reinforce every lesson with targeted quizzes that identify gaps and track your mastery.',
+    desc: 'Apply what you learn with scenario-based quizzes and exercises.',
   },
   {
     icon: 'M16 8v8m-4-5v5M8 8v8M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
     title: 'Progress Tracking',
-    desc: 'Visual dashboards show exactly where you are in each course and celebrate every milestone.',
+    desc: 'Track your growth and build confidence as you complete each stage.',
   },
   {
     icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
-    title: 'Expert Instructors',
-    desc: 'Learn directly from attorneys and paralegals with real-world pre-litigation experience.',
+    title: 'Attorney-Valued Skills',
+    desc: 'Learn what real professionals value in pre-litigation positions. Attorney feedback coming soon.',
   },
   {
     icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
     title: 'Certificates',
-    desc: 'Earn recognised certificates upon course completion to advance your legal career.',
+    desc: 'Receive a certificate of completion to showcase your skills to employers.',
   },
 ];
 
 const STEPS = [
-  { number: '01', title: 'Create Your Account', desc: 'Sign up in seconds — no credit card required.' },
-  { number: '02', title: 'Choose a Course', desc: 'Browse our growing library of pre-litigation courses.' },
-  { number: '03', title: 'Learn & Practice', desc: 'Watch lessons, take quizzes, and track your progress.' },
-  { number: '04', title: 'Earn Your Certificate', desc: 'Complete the course and download your certificate.' },
+  { number: '01', title: 'Create Your Account', desc: 'Sign up in seconds—no experience required.' },
+  { number: '02', title: 'Choose Your Course', desc: 'Start with foundational pre-litigation training.' },
+  { number: '03', title: 'Learn & Practice', desc: 'Watch lessons, complete exercises, and build real skills.' },
+  { number: '04', title: 'Earn Your Certificate', desc: 'Finish the course and showcase your completion certificate.' },
 ];
 
 const STATS = [
@@ -93,7 +93,7 @@ const TESTIMONIALS = [
 function Navbar() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#F0E8E5]">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img src={logo} alt="Pre-Litigation Academy" className="h-14 w-auto" />
         </Link>
@@ -107,13 +107,13 @@ function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             to="/login"
-            className="text-sm font-medium text-secondary hover:text-[#b37269] transition-colors px-4 py-2"
+            className="text-sm font-medium text-secondary hover:text-secondaryDark transition-colors px-4 py-2"
           >
             Sign in
           </Link>
           <Link
             to="/signup"
-            className="text-sm font-medium bg-secondary text-white px-5 py-2.5 rounded-xl hover:bg-[#b37269] transition-colors shadow-sm"
+            className="text-sm font-medium bg-secondary text-white px-5 py-2.5 rounded-xl hover:bg-secondaryDark transition-colors shadow-sm"
           >
             Get started
           </Link>
@@ -125,46 +125,50 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section className="pt-32 pb-20 px-6 bg-background overflow-hidden">
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    <section className="pt-24 pb-12 px-4 sm:pt-32 sm:pb-20 sm:px-6 bg-background overflow-hidden">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* Copy */}
         <div>
-          <span className="inline-flex items-center gap-2 bg-accent/60 text-secondary text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
+          <span className="inline-flex items-center gap-2 bg-accent/60 text-secondary text-xs font-semibold px-3 py-1 rounded-full mb-4 sm:mb-6">
             <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
             Now enrolling — Spring 2026 cohort
           </span>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-bold text-textDark leading-[1.1] tracking-tight mb-6">
-            Master Pre-Litigation{' '}
-            <span className="text-secondary">Law Practice</span>{' '}
-            from anywhere.
+          <h1 className="text-[1.45rem] sm:text-4xl lg:text-[52px] font-bold text-textDark leading-[1.35] sm:leading-[1.15] tracking-normal sm:tracking-tight mb-4 sm:mb-6">
+            Master Personal Injury Pre-Litigation{' '}
+            <span className="text-secondary">Skills for Legal Careers</span>{' '}
+            — from anywhere.
           </h1>
 
-          <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-lg">
-            Video-first courses, real-world case studies, and knowledge quizzes — built
-            by practicing attorneys for the next generation of legal professionals.
+          <p className="text-gray-500 text-sm sm:text-lg leading-relaxed mb-5 sm:mb-8 max-w-lg">
+            Step-by-step training in pre-litigation workflows designed for aspiring legal professionals and career changers.
           </p>
 
-          <ul className="space-y-2 mb-10">
-            {['Self-paced video lessons', 'Interactive quizzes & progress tracking', 'Industry-recognised certificates'].map(item => (
-              <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+          <ul className="space-y-1.5 mb-6 sm:mb-10">
+            {[
+              'Learn real pre-litigation workflows used in law firms',
+              'Practice demand letters, intake, and case handling',
+              'Track progress with quizzes and real-world exercises',
+              'Earn a certificate of completion',
+            ].map(item => (
+              <li key={item} className="flex items-center gap-2.5 text-xs sm:text-sm text-gray-600">
                 <span className="text-secondary shrink-0"><CheckIcon /></span>
                 {item}
               </li>
             ))}
           </ul>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Link
               to="/signup"
-              className="inline-flex items-center justify-center gap-2 bg-secondary text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-[#b37269] transition-all shadow-md hover:shadow-lg text-base"
+              className="inline-flex items-center justify-center gap-2 bg-secondary text-white font-semibold px-6 py-2.5 sm:px-8 sm:py-3.5 rounded-xl hover:bg-secondaryDark transition-all shadow-md hover:shadow-lg text-sm sm:text-base"
             >
               Start learning free
-              <Icon d="M5 12h14M12 5l7 7-7 7" size={18} />
+              <Icon d="M5 12h14M12 5l7 7-7 7" size={16} />
             </Link>
             <Link
               to="/login"
-              className="inline-flex items-center justify-center gap-2 border-2 border-[#E8D0CC] text-textDark font-semibold px-8 py-3.5 rounded-xl hover:border-secondary hover:text-secondary transition-all text-base"
+              className="inline-flex items-center justify-center gap-2 border-2 border-[#E8D0CC] text-textDark font-semibold px-6 py-2.5 sm:px-8 sm:py-3.5 rounded-xl hover:border-secondary hover:text-secondary transition-all text-sm sm:text-base"
             >
               Sign in
             </Link>
@@ -222,12 +226,12 @@ function StatsBar() {
 
 function Features() {
   return (
-    <section id="features" className="py-24 px-6 bg-white">
+    <section id="features" className="py-14 sm:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Why choose us</span>
           <h2 className="text-3xl sm:text-4xl font-bold text-textDark mt-3 mb-4">
-            Everything you need to succeed
+            Practical skills. Real workflows. Career-ready training.
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto">
             Our platform combines expert instruction, smart assessment, and a seamless
@@ -256,7 +260,7 @@ function Features() {
 
 function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 px-6 bg-background">
+    <section id="how-it-works" className="py-14 sm:py-24 px-4 sm:px-6 bg-background">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Simple process</span>
@@ -287,7 +291,7 @@ function HowItWorks() {
 
 function Testimonials() {
   return (
-    <section id="testimonials" className="py-24 px-6 bg-white">
+    <section id="testimonials" className="py-14 sm:py-24 px-4 sm:px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Student stories</span>
@@ -302,7 +306,7 @@ function Testimonials() {
               {/* stars */}
               <div className="flex gap-0.5 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#C6847A">
+                  <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#A55850">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
                 ))}
@@ -320,6 +324,9 @@ function Testimonials() {
             </div>
           ))}
         </div>
+        <p className="text-center text-xs text-gray-400 mt-8 max-w-xl mx-auto">
+          Results may vary. This program provides training for legal support roles and does not constitute legal licensure.
+        </p>
       </div>
     </section>
   );
@@ -334,11 +341,10 @@ function CTA() {
         <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl" />
 
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 relative z-10">
-          Ready to advance your legal career?
+          Ready to start a career in the legal field?
         </h2>
         <p className="text-white/80 mb-8 max-w-xl mx-auto relative z-10">
-          Join thousands of students who have already transformed their careers
-          through Pre-Litigation Academy.
+          Learn in-demand pre-litigation skills used in real law offices.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center relative z-10">
           <Link
@@ -369,6 +375,11 @@ function Footer() {
           <span className="text-white/40">Pre-Litigation Academy</span>
         </div>
         <p>© {new Date().getFullYear()} Pre-Litigation Academy. All rights reserved.</p>
+      </div>
+      <div className="max-w-6xl mx-auto px-6 pt-4 pb-2 border-t border-white/10 mt-4">
+        <p className="text-xs text-white/30 text-center">
+          Pre-Litigation Academy provides educational training only and does not offer legal advice or qualify individuals to practice law.
+        </p>
         <div className="flex gap-6">
           <Link to="/login" className="hover:text-white transition-colors">Sign in</Link>
           <Link to="/signup" className="hover:text-white transition-colors">Sign up</Link>

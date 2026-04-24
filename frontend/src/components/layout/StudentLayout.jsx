@@ -60,13 +60,16 @@ export default function StudentLayout({ children }) {
 
   const Sidebar = ({ mobile = false }) => (
     <aside className={`${mobile ? 'w-full' : 'w-60 hidden md:flex'} bg-white border-r border-[#F0E8E5] flex-col shrink-0 h-full`}>
+      {/* Brand stripe */}
+      <div className="h-1 w-full bg-gradient-to-r from-secondary via-primary to-accent shrink-0" />
+
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-[#F0E8E5]">
-        <img src={logo} alt="Pre-Litigation Academy" className="h-14 w-auto" />
+      <div className="px-4 py-4 border-b border-[#F0E8E5] bg-gradient-to-b from-[#FBF0EE] to-white">
+        <img src={logo} alt="Pre-Litigation Academy" className="h-12 w-auto" />
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -74,10 +77,10 @@ export default function StudentLayout({ children }) {
             end={item.end}
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
                 isActive
-                  ? 'bg-accent text-secondary font-medium'
-                  : 'text-gray-500 hover:bg-background hover:text-textDark'
+                  ? 'bg-accent text-secondary font-semibold border-l-[3px] border-secondary pl-[9px]'
+                  : 'text-gray-500 hover:bg-background hover:text-textDark border-l-[3px] border-transparent'
               }`
             }
           >
@@ -91,7 +94,7 @@ export default function StudentLayout({ children }) {
       <div className="px-4 py-4 border-t border-[#F0E8E5]">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-white text-sm font-medium hover:bg-[#b5726a] transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-secondary/30 text-secondary text-sm font-medium hover:bg-secondary hover:text-white transition-all"
         >
           {Icons.logout}
           Logout
@@ -121,7 +124,9 @@ export default function StudentLayout({ children }) {
       {/* Right column */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Top header */}
-        <header className="h-16 bg-white border-b border-[#F0E8E5] flex items-center justify-between px-6 shrink-0">
+        <header className="h-16 bg-white border-b-2 border-[#F0E8E5] flex items-center justify-between px-6 shrink-0 relative">
+          {/* Brand accent line at top */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary via-primary to-accent" />
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button
@@ -130,21 +135,14 @@ export default function StudentLayout({ children }) {
             >
               {Icons.menu}
             </button>
-            <p className="text-sm font-medium text-gray-400">Student Portal</p>
+            <span className="text-xs font-semibold text-secondary tracking-widest uppercase hidden sm:block">Student Portal</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-xs font-semibold text-secondary border border-secondary/20">
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-white ring-2 ring-secondary/20">
               {initials}
             </div>
             <span className="text-sm font-medium text-textDark hidden sm:block">{displayName}</span>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 transition-colors ml-2"
-            >
-              Logout
-              {Icons.logout}
-            </button>
           </div>
         </header>
 

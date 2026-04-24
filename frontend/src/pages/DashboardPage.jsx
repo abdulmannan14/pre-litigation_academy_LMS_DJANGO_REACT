@@ -12,7 +12,7 @@ import ErrorMessage from '../components/common/ErrorMessage';
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { courses, coursesLoading, coursesError, fetchCourses, fetchCourseProgress, fetchLesson } = useCourse();
+  const { courses, coursesLoading, coursesError, fetchCourses, refreshCourseProgress, fetchLesson } = useCourse();
   const navigate = useNavigate();
 
   const [progressMap, setProgressMap] = useState({}); // { [courseId]: progressData }
@@ -28,7 +28,7 @@ export default function DashboardPage() {
     setProgressLoading(true);
     const results = await Promise.all(
       courses.map(async (c) => {
-        const p = await fetchCourseProgress(c.id);
+        const p = await refreshCourseProgress(c.id); // always fetch fresh — bypasses cache
         return [c.id, p];
       }),
     );
@@ -64,18 +64,19 @@ export default function DashboardPage() {
     <Layout>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-textDark">
-          {greeting()}, {user?.first_name || user?.username} 👋
+        <h1 className="text-2xl font-bold text-textDark brand-heading">
+          Welcome back 👋
         </h1>
-        <p className="text-gray-500 mt-1 text-sm">Continue where you left off.</p>
+        <p className="text-gray-500 mt-1 text-sm">Pick up where you left off and keep building your legal skills.</p>
+        <p className="text-xs text-secondary font-medium mt-1">You're building real-world pre-litigation skills used in law offices.</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Course Progress" value={`${progressPct}%`} icon="📈" />
-        <StatCard label="Lessons Done" value={`${completedIds.length}/${totalLessons}`} icon="✅" />
-        <StatCard label="Enrolled Courses" value={courses.length} icon="📚" />
-        <StatCard label="Status" value={progressPct === 100 ? 'Done!' : 'Active'} icon="🎯" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <StatCard label="Overall Progress" value={`${progressPct}%`} icon="📈" />
+        <StatCard label="Lessons Completed" value={`${completedIds.length}/${totalLessons}`} icon="✅" />
+        <StatCard label="Courses Enrolled" value={courses.length} icon="📚" />
+        <StatCard label="Completion Status" value={progressPct === 100 ? 'Complete' : 'In Progress'} icon="🎯" />
       </div>
 
       {courses.length === 0 ? (
@@ -88,7 +89,7 @@ export default function DashboardPage() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Course progress card */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
+            <Card brand>
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h2 className="font-semibold text-textDark">{course.title}</h2>
@@ -100,16 +101,33 @@ export default function DashboardPage() {
                   {progressPct === 100 ? 'Completed' : 'In Progress'}
                 </Badge>
               </div>
-              <ProgressBar value={progressPct} size="md" className="mb-6" />
+              <ProgressBar value={progressPct} size="md" className="mb-2" />
+              {progressPct > 0 && progressPct < 100 && (
+                <p className="text-xs text-secondary font-medium mb-4">You're on track — keep going</p>
+              )}
 
-              <div className="mt-6 flex gap-3 flex-wrap">
-                <Button onClick={() => navigate(`/courses/${course.id}`)} variant="primary">
-                  View Course
-                </Button>
-                {lastLessonId && Number.isInteger(lastLessonId) && (
-                  <Button onClick={() => navigate(`/lessons/${lastLessonId}`)} variant="outline">
-                    Resume Lesson
-                  </Button>
+              <div className="mt-4 flex gap-3 flex-wrap">
+                {progressPct === 100 ? (
+                  <>
+                    <Button onClick={() => navigate(`/courses/${course.id}`)} variant="primary">
+                      Review Course
+                    </Button>
+                    <Button variant="outline" disabled className="opacity-60 cursor-not-allowed">
+                      View Certificate (Coming Soon)
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => navigate(lastLessonId ? `/lessons/${lastLessonId}` : `/courses/${course.id}`)}
+                      variant="primary"
+                    >
+                      {(progressPct > 0 || lastLessonId) ? 'Resume Course' : 'Start Course'}
+                    </Button>
+                    <Button onClick={() => navigate(`/courses/${course.id}`)} variant="outline">
+                      View Details
+                    </Button>
+                  </>
                 )}
               </div>
             </Card>
@@ -193,10 +211,10 @@ export default function DashboardPage() {
 
 function StatCard({ label, value, icon }) {
   return (
-    <Card className="text-center !p-4">
-      <div className="text-2xl mb-1">{icon}</div>
-      <p className="text-xl font-bold text-textDark">{value}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+    <Card className="text-center !p-3">
+      <div className="text-xl mb-0.5">{icon}</div>
+      <p className="text-lg font-bold text-textDark leading-tight">{value}</p>
+      <p className="text-xs text-gray-500 mt-0.5 leading-tight">{label}</p>
     </Card>
   );
 }

@@ -58,6 +58,31 @@ export default function CoursePage() {
   const totalLessons = course.modules?.reduce((a, m) => a + (m.lessons?.length ?? 0), 0) ?? 0;
   const firstLessonId = course.modules?.[0]?.lessons?.[0]?.id;
 
+  // Attorney Insights — shown after course completion (static placeholder until backend is ready)
+  const ATTORNEY_INSIGHTS = [
+    {
+      id: 1,
+      name: 'Coming Soon',
+      title: 'Personal Injury Attorney, CA',
+      caption: 'Why Attention to Detail Matters',
+      duration: '~30 sec',
+    },
+    {
+      id: 2,
+      name: 'Coming Soon',
+      title: 'Paralegal Supervisor, TX',
+      caption: 'What Law Firms Look for in Pre-Litigation Staff',
+      duration: '~45 sec',
+    },
+    {
+      id: 3,
+      name: 'Coming Soon',
+      title: 'Personal Injury Attorney, FL',
+      caption: 'How to Handle Intake Like a Pro',
+      duration: '~25 sec',
+    },
+  ];
+
   return (
     <Layout>
       {/* Back nav */}
@@ -69,7 +94,7 @@ export default function CoursePage() {
       <div className="bg-white rounded-2xl border border-[#F0E8E5] p-6 flex flex-col md:flex-row md:items-center gap-6 mb-8">
         <div className="flex-1">
           <Badge variant="default" className="mb-3">{course.module_count} Modules</Badge>
-          <h1 className="text-xl font-bold text-textDark mb-2">{course.title}</h1>
+          <h1 className="text-xl font-bold text-textDark mb-2 brand-heading">{course.title}</h1>
           <p className="text-sm text-gray-500 mb-4 leading-relaxed">{course.description}</p>
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
             <span>📚 {totalLessons} Lessons</span>
@@ -95,6 +120,46 @@ export default function CoursePage() {
           )}
         </div>
       </div>
+
+      {/* Attorney Insights — visible only after course completion */}
+      {progressPct === 100 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary text-base shrink-0">⚖️</div>
+            <div>
+              <h2 className="text-base font-bold text-textDark">Insights from Practicing Attorneys</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Bonus content — not required to complete the course.</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mb-4 ml-11">
+            These insights are shared for educational purposes to help students understand real-world expectations in legal environments.
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ATTORNEY_INSIGHTS.map((item) => (
+              <div key={item.id} className="bg-white rounded-2xl border border-[#F0E8E5] overflow-hidden">
+                {/* Video placeholder */}
+                <div className="h-36 bg-gradient-to-br from-accent to-accent/40 flex flex-col items-center justify-center gap-2 relative">
+                  <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-secondary/60 font-medium">{item.duration}</span>
+                  <div className="absolute top-3 right-3 bg-white/80 text-secondary text-xs font-semibold px-2 py-0.5 rounded-full">
+                    Coming Soon
+                  </div>
+                </div>
+                {/* Info */}
+                <div className="p-4">
+                  <p className="text-sm font-semibold text-textDark leading-snug mb-1">{item.caption}</p>
+                  <p className="text-xs font-medium text-secondary">{item.name}</p>
+                  <p className="text-xs text-gray-400">{item.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Modules */}
       <h2 className="text-base font-semibold text-textDark mb-4">Course Content</h2>
