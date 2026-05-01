@@ -19,6 +19,7 @@ const AdminOverviewPage      = lazy(() => import('./pages/admin/AdminOverviewPag
 const AdminCoursesPage       = lazy(() => import('./pages/admin/AdminCoursesPage'));
 const AdminCourseDetailPage  = lazy(() => import('./pages/admin/AdminCourseDetailPage'));
 const AdminUsersPage         = lazy(() => import('./pages/admin/AdminUsersPage'));
+const AdminJobsPage          = lazy(() => import('./pages/admin/AdminJobsPage'));
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
               <Route path="/admin/courses"            element={<ProtectedRoute adminOnly><AdminCoursesPage /></ProtectedRoute>} />
               <Route path="/admin/courses/:courseId"  element={<ProtectedRoute adminOnly><AdminCourseDetailPage /></ProtectedRoute>} />
               <Route path="/admin/users"              element={<ProtectedRoute adminOnly><AdminUsersPage /></ProtectedRoute>} />
+              <Route path="/admin/jobs"               element={<ProtectedRoute adminOnly><AdminJobsPage /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

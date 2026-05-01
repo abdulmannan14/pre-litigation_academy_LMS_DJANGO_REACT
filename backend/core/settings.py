@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'courses',
     'quizzes',
     'progress',
+    'jobs',
 ]
 
 # ─── Middleware ────────────────────────────────────────────────────────────────

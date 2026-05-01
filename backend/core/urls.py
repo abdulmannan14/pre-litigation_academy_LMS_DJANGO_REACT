@@ -71,5 +71,6 @@ urlpatterns = [
     path('api/', include('courses.urls')),
     path('api/', include('quizzes.urls')),
     path('api/', include('progress.urls')),
+    path('api/', include('jobs.urls')),
     re_path(r'^media/(?P<path>.+)$', serve_media),
 ]

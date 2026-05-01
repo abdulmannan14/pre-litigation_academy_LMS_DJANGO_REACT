@@ -6,6 +6,7 @@ const navItems = [
   { to: '/admin', label: 'Overview', icon: '📊', end: true },
   { to: '/admin/courses', label: 'Courses', icon: '📚' },
   { to: '/admin/users', label: 'Students', icon: '👥' },
+  { to: '/admin/jobs', label: 'Job Posts', icon: '💼' },
 ];
 
 export default function AdminLayout({ children }) {
