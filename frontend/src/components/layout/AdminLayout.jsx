@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
       <aside className="w-60 bg-surface border-r border-divider flex flex-col shrink-0">
         {/* Logo */}
         <div className="px-4 py-5 border-b border-divider">
-          <img src={logo} alt="Pre-Litigation Academy" className="h-14 w-auto" />
+          <img src={logo} alt="Pre-Litigation Academy" className="h-20 w-auto" />
         </div>
 
         {/* Nav */}

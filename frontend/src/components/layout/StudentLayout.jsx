@@ -65,7 +65,7 @@ export default function StudentLayout({ children }) {
 
       {/* Logo */}
       <div className="px-4 py-4 border-b border-[#F0E8E5] bg-gradient-to-b from-[#FBF0EE] to-white">
-        <img src={logo} alt="Pre-Litigation Academy" className="h-12 w-auto" />
+        <img src={logo} alt="Pre-Litigation Academy" className="h-20 w-auto" />
       </div>
 
       {/* Nav */}
